@@ -12,3 +12,4 @@ Run LowForceExp_DataStatistics.py to obtain mean, standard deviation, power stat
 
 Scripts MinContact_avgSEM_grapher.py and MinContact_avgPower_grapher.py use matplotlib to create figures for 
 publication
+Script MinContact_welchTest.py calculates the Welch's t-test statistics for contact
