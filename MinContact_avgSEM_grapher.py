@@ -25,12 +25,12 @@ from matplotlib.ticker import AutoMinorLocator
 import matplotlib.pyplot as plt
 
 # edit these constants to access figure
-rootFolder = 'C:\Users\Randy Lee\Documents\VIA Lab\Python Scripts'
-dataFolder = 'C:\Users\Randy Lee\Documents\VIA Lab\Python Scripts\data'
-outputFolder = 'C:\Users\Randy Lee\Documents\VIA Lab\Python Scripts\output'
-#rootFolder = 'D:\Randy Lee\Documents\VIA Lab\Python Scripts'
-#dataFolder = 'D:\Randy Lee\Documents\VIA Lab\Python Scripts\data'
-#outputFolder = 'D:\Randy Lee\Documents\VIA Lab\Python Scripts\output'
+#rootFolder = 'C:\Users\Randy Lee\Documents\VIA Lab\Python Scripts'
+#dataFolder = 'C:\Users\Randy Lee\Documents\VIA Lab\Python Scripts\data'
+#outputFolder = 'C:\Users\Randy Lee\Documents\VIA Lab\Python Scripts\output'
+rootFolder = 'D:\Randy Lee\Documents\VIA Lab\Python Scripts'
+dataFolder = 'D:\Randy Lee\Documents\VIA Lab\Python Scripts\data'
+outputFolder = 'D:\Randy Lee\Documents\VIA Lab\Python Scripts\output'
 
 data_mean = '\\MinContact_meanForce_avgSEM.txt'
 data_SD = '\\MinContact_SDForce_avgSEM.txt'
@@ -61,6 +61,12 @@ pdfSaveName_LFEstd_noFD = '\\LFE_std_noFD.pdf'
 pdfSaveName_LFEstd_visFD = '\\LFE_std_visFD.pdf'
 
 pdfSaveName_LFEz_CDF = '\\LFE_windowTime_Zscore_CDF.pdf'
+
+# font sizes for axis labels, legends, and other text
+label_fontSize = 14
+legend_fontSize = 12
+text_fontSize = 14
+tick_fontSize = 12
 
 
 def plot_data(data, title, y_label, savePath):
@@ -107,8 +113,9 @@ def plot_data(data, title, y_label, savePath):
     
     # set up rest of figure & labels  
     plt.grid(which = 'major', axis = 'y')
-    if title != 'Contact Time':
-        plt.ylim(ymin = 0)
+    plt.ylim(ymin = 0)
+    if title == 'Contact Time':
+        plt.ylim(ymax = 5)
     if title == 'Power (1 to 4 Hz)':
         plt.ylim(ymax = 1.2e7)
     if (title == 'Power (4 to 7 Hz)' or title == 'Power (7 to 10 Hz)'):
@@ -125,10 +132,11 @@ def plot_data(data, title, y_label, savePath):
     plt.xticks(gain, ticks)
     minor_locator = AutoMinorLocator(2)
     ax.xaxis.set_minor_locator(minor_locator)
-    ax.tick_params(axis = 'x', which='both')
+    ax.tick_params(axis = 'x', which='both', labelsize = tick_fontSize)
+    ax.tick_params(axis = 'y', labelsize = tick_fontSize)
     ax.set_xticks([1,3], minor = True)
-    plt.xlabel('Magnification Factor', fontsize = 10)
-    plt.ylabel(y_label, fontsize = 10)  
+    plt.xlabel('Magnification Factor', fontsize = label_fontSize)
+    plt.ylabel(y_label, fontsize = label_fontSize)  
 #    if (title == 'LFE mean noFD' or title == 'LFE mean visFD' or 
 #    title == 'LFE std noFD' or title == 'LFE std visFD'):
 #        plt.xlim(xmin = -5, xmax = 5)
@@ -143,11 +151,12 @@ def plot_data(data, title, y_label, savePath):
         labels = ['Push (4-7 Hz)','Pull (4-7 Hz)']
     if title == 'Power (7 to 10 Hz)':
         labels = ['Push (7-10 Hz)','Pull (7-10 Hz)']
-    leg = ax.legend(handles, labels, loc = 'upper right', fontsize = 8, 
-                    numpoints = 2, handlelength=3)
+    leg = ax.legend(handles, labels, loc = 'upper right', 
+                    fontsize = legend_fontSize, numpoints = 2, handlelength=3)
     if title == 'Contact Time':
-        leg = ax.legend(handles, labels, loc = 'lower right', fontsize = 8, 
-                        numpoints = 2, handlelength=3)
+        leg = ax.legend(handles, labels, loc = 'lower right', 
+                        fontsize = legend_fontSize, numpoints = 2, 
+                        handlelength=3)
     leg.get_frame().set_linewidth(0.8)
     plt.tight_layout()
     
@@ -188,16 +197,22 @@ def plot_LFEdata(data, title, y_label, savePath):
     handles_noErr = [h[0] for h in handles_noErr] 
     
     if (title == 'LFE mean noFD' or title == 'LFE mean visFD'):
+        # y = x target line
         plt.plot(target, target, linestyle = '--', dashes = (4,3),
                  label = 'Target Force', color = 'k')
+        # y = x + 0.5 and y = x - 0.5 window lines
+        #plt.plot(target, target+0.5, linestyle = '-', color = 'k')
+        #plt.plot(target, target-0.5, linestyle = '-', color = 'k')
+        plt.fill_between(target, target+0.5, target-0.5, alpha = 0.30, 
+                         color = 'y')
         plt.axhline(y = 0, color = 'k')
-        plt.text(-2.8, 18, 'Push', fontsize = 10)
-        plt.text(2.2, 18, 'Pull', fontsize = 10)
+        plt.text(-2.8, 18, 'Push', fontsize = text_fontSize)
+        plt.text(2.2, 18, 'Pull', fontsize = text_fontSize)
         plt.ylim(ymin = -20, ymax = 20)
     
     if (title == 'LFE std noFD' or title == 'LFE std visFD'):
-        plt.text(-2.8, 11.5, 'Push', fontsize = 10)
-        plt.text(2.2, 11.5, 'Pull', fontsize = 10)
+        plt.text(-2.8, 11.5, 'Push', fontsize = text_fontSize)
+        plt.text(2.2, 11.5, 'Pull', fontsize = text_fontSize)
         plt.ylim(ymin = 0, ymax = 12)
     
     plt.axvline(x = 0, color = 'k')       
@@ -210,22 +225,25 @@ def plot_LFEdata(data, title, y_label, savePath):
     #ax.spines['left'].set_visible(False)
     ax.yaxis.set_ticks_position('left')
     ax.xaxis.set_ticks_position('bottom')
+    ax.tick_params(axis = 'both', labelsize = tick_fontSize)
     
-    plt.xticks(target, ticks)
-    plt.xlabel('Target Force '+r'$(grams)$', fontsize = 10)
-    plt.ylabel(y_label, fontsize = 10)
+    plt.xticks(target, ticks, fontsize = tick_fontSize)
+    plt.xlabel('Target Force '+r'$(grams)$', fontsize = label_fontSize)
+    plt.ylabel(y_label, fontsize = label_fontSize)
     
     # remove error bars only
     handles, labels = ax.get_legend_handles_labels()
     if (title == 'LFE mean noFD' or title == 'LFE mean visFD'):
         handles_noErr = numpy.append(handles_noErr, handles[0])
-        leg = ax.legend(handles_noErr, ['Magnification Off', 'Magnification On', 'Target Force'],
-                    loc = 'lower right', fontsize = 8,
+        leg = ax.legend(handles_noErr, 
+                    ['Magnification Off', 'Magnification On', 'Target Force'],
+                    loc = 'lower right', fontsize = legend_fontSize,
                     numpoints = 2, handlelength = 2)
     else:
         handles = [h[0] for h in handles] 
-        leg = ax.legend(handles, labels, loc = 'lower right', fontsize = 8, 
-                        numpoints = 2, handlelength = 2)
+        leg = ax.legend(handles, labels, loc = 'lower right', 
+                        fontsize = legend_fontSize, numpoints = 2, 
+                        handlelength = 2)
     leg.get_frame().set_linewidth(0.8)
     
     plt.tight_layout()
@@ -273,10 +291,11 @@ def plot_CDF(z_magOff, z_magOn, y_label, savePath):
     plt.xlim(xmax = 3)
     #xticks = numpy.array((ax.get_xticks() * 100), dtype= numpy.int)
     #ax.set_xticklabels(xticks, size = 8) 
-    ax.set_yticklabels(ax.get_yticks(), size = 8)
-    plt.legend(loc = 'lower right', fontsize = 6, handlelength = 3)
-    plt.xlabel('% Time in Window Z-Score', fontsize = 10)
-    plt.ylabel(y_label, fontsize = 10)
+    #ax.set_yticklabels(ax.get_yticks(), size = tick_fontSize)
+    ax.tick_params(axis = 'both', labelsize = tick_fontSize)
+    plt.legend(loc = 'lower right', fontsize = legend_fontSize-3, handlelength = 3)
+    plt.xlabel('% Time in Window Z-Score', fontsize = label_fontSize)
+    plt.ylabel(y_label, fontsize = label_fontSize)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.yaxis.set_ticks_position('left')
@@ -302,17 +321,16 @@ def plot_CDF(z_magOff, z_magOn, y_label, savePath):
     #xticks = numpy.array((ax.get_xticks() * 100), dtype= numpy.int)
     #ax.set_xticklabels(xticks, size = 8) 
     ax.set_yticklabels(ax.get_yticks(), size = 8)
-    plt.legend(loc = 'lower right', fontsize = 8, handlelength = 3)
-    plt.xlabel('% Time in Window Z-Score', fontsize = 10)
-    plt.ylabel(y_label, fontsize = 10)
+    plt.legend(loc = 'lower right', fontsize = legend_fontSize, handlelength = 3)
+    plt.xlabel('% Time in Window Z-Score', fontsize = label_fontSize)
+    plt.ylabel(y_label, fontsize = label_fontSize)
     plt.tight_layout()
     pp.savefig(fig2)
     
     # plot visual feedback condition only
     fig3 = plt.figure()
 
-    plt.plot(sort_magOff_visFD, y, color = 'k', 
-             label = 'Magnification Off')
+    plt.plot(sort_magOff_visFD, y, color = 'k', label = 'Magnification Off')
              
     plt.plot(sort_magOn_visFD, y, color = 'k', ls = '--', dashes = (4,3),
              label = 'Magnification On') 
@@ -326,9 +344,9 @@ def plot_CDF(z_magOff, z_magOn, y_label, savePath):
     #xticks = numpy.array((ax.get_xticks() * 100), dtype= numpy.int)
     #ax.set_xticklabels(xticks, size = 8) 
     ax.set_yticklabels(ax.get_yticks(), size = 8)
-    plt.legend(loc = 'lower right', fontsize = 8, handlelength = 3)
-    plt.xlabel('% Time in Window Z-Score', fontsize = 10)
-    plt.ylabel(y_label, fontsize = 10)
+    plt.legend(loc = 'lower right', fontsize = legend_fontSize, handlelength = 3)
+    plt.xlabel('% Time in Window Z-Score', fontsize = label_fontSize)
+    plt.ylabel(y_label, fontsize = label_fontSize)
     plt.tight_layout()
     pp.savefig(fig3)    
     
@@ -414,16 +432,16 @@ plot_data(contact_rawData, 'Contact Time', 'Contact Time  '+r'$(sec)$',
           savePath_contact)
 
 plot_LFEdata(LFEmean_noFD_rawData, 'LFE mean noFD', 
-          'Mean Contact Force '+r'$(grams)$', savePath_LFEmean_noFD)
+          'Mean Applied Force '+r'$(grams)$', savePath_LFEmean_noFD)
 
 plot_LFEdata(LFEmean_visFD_rawData, 'LFE mean visFD',
-          'Mean Contact Force '+r'$(grams)$', savePath_LFEmean_visFD)
+          'Mean Applied Force '+r'$(grams)$', savePath_LFEmean_visFD)
 
 plot_LFEdata(LFEstd_noFD_rawData, 'LFE std noFD',
-          'SD Contact Force '+r'$(grams)$', savePath_LFEstd_noFD)
+          'SD Applied Force '+r'$(grams)$', savePath_LFEstd_noFD)
 
 plot_LFEdata(LFEstd_visFD_rawData, 'LFE std visFD',
-          'SD Contact Force '+r'$(grams)$', savePath_LFEstd_visFD)          
+          'SD Applied Force '+r'$(grams)$', savePath_LFEstd_visFD)          
 
 plot_CDF(LFEz_mag0, LFEz_mag1,
          'Cumulative Probability', savePath_LFEz_CDF)

@@ -66,11 +66,12 @@ def plot_data(data, title, y_label, savePath):
     ax.spines['top'].set_visible(False)
     ax.yaxis.set_ticks_position('left')
     ax.xaxis.set_ticks_position('bottom')
+    plt.xticks(gain, ticks)
+    ax.tick_params(axis = 'both', labelsize = 12)
     plt.xlim(xmin = 0, xmax = 4)
     #plt.axvline(x = 0, linewidth = 1.0, color = 'k')
-    plt.xticks(gain, ticks)
-    plt.xlabel('Frequency Band', fontsize = 10)
-    plt.ylabel(y_label, fontsize = 10)
+    plt.xlabel('Frequency Band', fontsize = 14)
+    plt.ylabel(y_label, fontsize = 14)
     plt.ticklabel_format(style = 'sci', axis = 'y', scilimits = (0,0))
     
 
@@ -105,7 +106,7 @@ savePath = outputFolder + pdfSaveName
 
 
 #plot data
-plot_data(rawData,' ', 'Power Spectral Density  '+r'$(grams^2 \; Hz)$', savePath)
+plot_data(rawData,' ', 'Power  '+r'$(grams^2 \; Hz)$', savePath)
 
 
 print "\nGraphing done!!"
