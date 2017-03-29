@@ -32,8 +32,14 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 subjectNumber = 'S2008'
 
-#rawDataDirectory = 'C:\\Users\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\MinimumContact_rawData\\'
-rawDataDirectory = 'D:\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\MinimumContact_rawData'
+rawDataDirectory = 'C:\\Users\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\MinimumContact_rawData\\'
+#rawDataDirectory = 'D:\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\MinimumContact_rawData'
+
+# font sizes for axis labels, legends, and other text
+label_fontSize = 12
+legend_fontSize = 8
+text_fontSize = 8
+tick_fontSize = 10
 
 ###############################################################################
 ##
@@ -600,11 +606,11 @@ def graph_contact(trialParameters, blockNumberString):
         figureTitle = 'Trial#{}; Direction = {}; Magnification Gain = {} '\
             'Perceived Target = {})'.format(figCounter, direction, magnification,
                 perceivedForce)
-        fig.suptitle(figureTitle, fontsize=10, fontweight='bold')
+        fig.suptitle(figureTitle, fontsize=8, fontweight='bold')
 
         ax1 = plt.subplot(211)
         subplotTitle = 'GS0-100 Force Sensor'
-        ax1.set_title(subplotTitle, fontsize=10)
+        ax1.set_title(subplotTitle, fontsize=label_fontSize)
 
         ## Plot trial force to top subplot
         x = numpy.arange(currentDataSize[0])
@@ -614,7 +620,8 @@ def graph_contact(trialParameters, blockNumberString):
         plt.xticks(numpy.arange(0,len(x),1000),
                    numpy.arange(0,math.ceil(len(x)/1000)+1,1, dtype=numpy.int))
         plt.setp(ax1.get_xticklabels(), visible=False)
-        plt.ylabel('Applied Force '+r'$(grams)$', fontsize=10)
+        plt.ylabel('Applied Force '+r'$(grams)$', fontsize=label_fontSize)
+        plt.tick_params(axis = 'y', labelsize = tick_fontSize)
         #plt.xlabel('Time (seconds)')
         plt.grid(axis='y', which='major')
 
@@ -666,15 +673,16 @@ def graph_contact(trialParameters, blockNumberString):
 
         ax2 = plt.subplot(212)
         subplotTitle = "Welch's t-test p-values"
-        ax2.set_title(subplotTitle, fontsize=10)
+        ax2.set_title(subplotTitle, fontsize=label_fontSize)
         
         # set axes and labels
         ax2.set_xlim(left=ax1_xmin, right=ax1_xmax)
         plt.axis(ymin=-0.05, ymax=1)
         plt.xticks(numpy.arange(0,len(x),1000),
                    numpy.arange(0,math.ceil(len(x)/1000)+1,1, dtype=numpy.int))
-        plt.xlabel('Time '+r'$(sec)$', fontsize=10)
-        plt.ylabel('p-value', fontsize=10)
+        plt.xlabel('Time '+r'$(sec)$', fontsize=label_fontSize)
+        plt.ylabel('p-value', fontsize=label_fontSize)
+        plt.tick_params(axis = 'both', labelsize = tick_fontSize)
         plt.grid(axis='y', which='major')
         
         # Load and extract data
