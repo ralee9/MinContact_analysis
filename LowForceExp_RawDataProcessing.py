@@ -44,10 +44,10 @@ rawDataDirectory = 'C:\\Users\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\LFE_tes
 #rawDataDirectory = 'D:\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\'
 
 # font sizes for axis labels, legends, and other text
-label_fontSize = 14
-legend_fontSize = 12
-text_fontSize = 14
-tick_fontSize = 12
+label_fontSize = 11
+legend_fontSize = 8
+text_fontSize = 8
+tick_fontSize = 10
 
 ##############################################################################
 ##
@@ -389,12 +389,12 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
                    trialParameters[trialCounter][0],
                    trialParameters[trialCounter][1],
                    trialParameters[trialCounter][2])
-            fig.suptitle(figureTitle, fontsize = 10, fontweight = 'bold')
+            fig.suptitle(figureTitle, fontsize = 8, fontweight = 'bold')
 
 
             ax1 = plt.subplot(211)
             subplotTitle = 'GS0 Force Sensor'
-            ax1.set_title(subplotTitle, fontsize = text_fontSize)
+            ax1.set_title(subplotTitle, fontsize = label_fontSize)
             
             ## Plot trial force & filtered force to top subplot
             x = numpy.arange(currentDataSize[0])
@@ -441,7 +441,7 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
 
             # End of visual feedback, 6s before trial end
             plt.axvline(x = (endStamp - 6000), color = 'r', ls = '--', lw= 1.25)
-            plt.text(x = (endStamp - 4800), y = 22, 
+            plt.text(x = (endStamp - 5800), y = 22, 
                      s = '<---(no visual feedback)--->', style = 'italic', 
                      fontsize = text_fontSize)
             
@@ -449,7 +449,7 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
             ax2L = plt.subplot(212, sharex = ax1)
             #plt.axis(ymin = 3, ymax = 7)
             subplotTitle = 'HHFM'
-            plt.title(subplotTitle, fontsize = 14)
+            plt.title(subplotTitle, fontsize = label_fontSize)
 
             x = numpy.arange(currentDataSize[0])
             HHFM_out, = plt.plot(x, HHFM_SolenoidForce, 'b', 
@@ -457,6 +457,7 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
             
             ax2L.set_xlabel('Time '+r'$(sec)$', fontsize = label_fontSize)
             ax2L.set_ylabel('Actuator Voltage', fontsize = label_fontSize)
+            plt.tick_params(axis = 'both', labelsize = tick_fontSize)
 
             # setup right hand axes for sensor voltage
             ax2R = ax2L.twinx()
@@ -466,7 +467,7 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
             plt.xticks(numpy.arange(0,len(x),1000), 
                        numpy.arange(0,math.ceil(len(x)/1000)+1,1, 
                                     dtype = numpy.int))
-            plt.tick_params(axis = 'x', labelsize = tick_fontSize)
+            plt.tick_params(axis = 'y', labelsize = tick_fontSize)
             plt.grid(axis = 'y', which = 'major')
 
             plt.legend((HHFM_out, HHFM_in), 
