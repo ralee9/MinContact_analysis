@@ -41,8 +41,14 @@ from matplotlib.ticker import AutoMinorLocator
 
 subjectNumber = 'S2007' # Only need to change subjectNumber to process all data
 
-#rawDataDirectory = 'C:\\Users\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\MinimumContact_rawData'
-rawDataDirectory = 'D:\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\MinimumContact_rawData'
+rawDataDirectory = 'C:\\Users\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\MinimumContact_rawData'
+#rawDataDirectory = 'D:\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\MinimumContact_rawData'
+
+# font sizes for axis labels, legends, and other text
+label_fontSize = 10
+legend_fontSize = 8
+text_fontSize = 8
+tick_fontSize = 10
 
 ################################################################################
 ##
@@ -322,11 +328,11 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
                    figCounter, currentFileName, direction, 
                    int(trialParameters[trialCounter, 1]), 
                    int(trialParameters[trialCounter, 2]))
-            fig.suptitle(figureTitle, fontsize=10, fontweight='bold')
+            fig.suptitle(figureTitle, fontsize=8, fontweight='bold')
 
             ax1 = plt.subplot(211)
             subplotTitle = 'GS0-100 Force Sensor'
-            ax1.set_title(subplotTitle, fontsize=10)
+            ax1.set_title(subplotTitle, fontsize=label_fontSize)
             
             ## Plot trial force & filtered force to top subplot
             x = numpy.arange(currentDataSize[0])
@@ -335,7 +341,7 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
             plt.axis(ymin=-45, ymax=45)
             plt.setp(ax1.get_xticklabels(), visible=False)
             plt.xticks(numpy.arange(0,len(x),1000))
-            plt.ylabel('Applied Force '+r'$(grams)$', fontsize=10)            
+            plt.ylabel('Applied Force '+r'$(grams)$', fontsize=label_fontSize)            
             plt.grid(axis='y', which='major')            
             
             # Plot target force and x axis
@@ -377,18 +383,18 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
 
             # End of visual feedback, 6s before trial end
             visLine = plt.axvline(x=endStamp - 6000, color='r', ls='--', lw=1.25)
-            plt.text(x=endStamp - 5000, y=32, s='<---(no visual feedback)--->',
-                     style='italic', fontsize=8)
+            plt.text(x=endStamp - 5200, y=32, s='<---(no visual feedback)--->',
+                     style='italic', fontsize=text_fontSize)
             
             plt.legend((GS0Line, targetLine),
                        ('GS0-100 Force (raw)','Target Force'), handlelength=3,
-                       loc='lower right', fontsize=8)
+                       loc='lower right', fontsize=legend_fontSize)
 
             ## Plot trial HHFM voltages to bottom subplot
             ax2L = plt.subplot(212, sharex = ax1)
             plt.axis(ymin = 2, ymax = 7)
             subplotTitle = 'HHFM'
-            plt.title(subplotTitle, fontsize=10)
+            plt.title(subplotTitle, fontsize=label_fontSize)
 
             x = numpy.arange(currentDataSize[0])
             HHFM_out, = plt.plot(x, HHFM_SolenoidForce, 'b', label='HHFM Actuator')
@@ -404,8 +410,8 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
                     plt.fill_betweenx(saturation, x1=left, x2=right, facecolor='y', 
                                      alpha=0.1)
 
-            ax2L.set_xlabel('Time '+r'$(sec)$', fontsize=10)
-            ax2L.set_ylabel('Actuator Voltage', fontsize=10)
+            ax2L.set_xlabel('Time '+r'$(sec)$', fontsize=label_fontSize)
+            ax2L.set_ylabel('Actuator Voltage', fontsize=label_fontSize)
 
             # setup right hand axes for sensor voltage
             ax2R = ax2L.twinx()
@@ -416,11 +422,11 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
             plt.xticks(numpy.arange(0,len(x),1000), 
                        numpy.arange(0,math.ceil(len(x)/1000)+1,1, 
                                     dtype = numpy.int))
-            plt.tick_params(axis='x', labelsize=8)
+            plt.tick_params(axis='x', labelsize=tick_fontSize)
             plt.grid(axis='y', which='major')
 
             plt.legend((HHFM_out, HHFM_in), ('HHFM Actuator', 'HHFM Sensor'),
-                       loc='lower right', fontsize=8)
+                       loc='lower right', fontsize=legend_fontSize)
 
             ## Save figure to PDF
             pp.savefig(figCounter)
