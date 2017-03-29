@@ -43,6 +43,12 @@ subjectNumber = 'S5' # Only need to change subjectNumber to process all data
 rawDataDirectory = 'C:\\Users\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\LFE_testing\\LFE_max_4g\\'
 #rawDataDirectory = 'D:\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\'
 
+# font sizes for axis labels, legends, and other text
+label_fontSize = 14
+legend_fontSize = 12
+text_fontSize = 14
+tick_fontSize = 12
+
 ##############################################################################
 ##
 ## Local script functions
@@ -383,12 +389,12 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
                    trialParameters[trialCounter][0],
                    trialParameters[trialCounter][1],
                    trialParameters[trialCounter][2])
-            fig.suptitle(figureTitle, fontsize = 12, fontweight = 'bold')
+            fig.suptitle(figureTitle, fontsize = 10, fontweight = 'bold')
 
 
             ax1 = plt.subplot(211)
             subplotTitle = 'GS0 Force Sensor'
-            ax1.set_title(subplotTitle, fontsize = 10)
+            ax1.set_title(subplotTitle, fontsize = text_fontSize)
             
             ## Plot trial force & filtered force to top subplot
             x = numpy.arange(currentDataSize[0])
@@ -396,8 +402,9 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
             #Plot lower and upper bounds, x-axis
             #plt.axhline(y = lowerBoundGrams, color = 'g', ls = '--', lw = 0.50)
             #plt.axhline(y = upperBoundGrams, color = 'r', ls = '--', lw = 0.50)
-            targetZone = plt.fill_between(x, y1 = lowerBoundGrams, y2 = upperBoundGrams,
-                             alpha = 0.30, color = 'y')
+            targetZone = plt.fill_between(x, y1 = lowerBoundGrams, 
+                                          y2 = upperBoundGrams, alpha = 0.30, 
+                                          color = 'y')
             plt.axhline(y = 0, lw = 1.0, color = 'k')
             
             # plot data
@@ -411,11 +418,14 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
             plt.axis(ymin = -30, ymax = 30)
             plt.setp(ax1.get_xticklabels(), visible = False)
             plt.xticks(numpy.arange(0,len(x),1000))
-            plt.ylabel('Applied Force '+r'$(grams)$', fontsize = 10)            
+            plt.tick_params(axis = 'y', labelsize = tick_fontSize)
+            plt.ylabel('Applied Force '+r'$(grams)$', fontsize = label_fontSize)            
             plt.grid(axis = 'y', which = 'major')
             
-            plt.legend((GS0Line, targetZone), ('GS0-100 Force (raw)', 'Target Window'),
-                       loc = 'lower right', fontsize = 8, handlelength = 3)
+            plt.legend((GS0Line, targetZone), 
+                       ('GS0-100 Force (raw)', 'Target Window'),
+                       loc = 'lower right', fontsize = legend_fontSize,
+                       handlelength = 3)
 
             ## Graph vertical lines to mark time points in trial
             # Actual begin of trial stimulus 20 pts after start of file
@@ -423,8 +433,7 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
 
             # End of trial marker = 2500 points before end of file
             endStamp = currentDataSize[0] - 2500
-            plt.axvline(x = endStamp,
-                color = 'r', ls = '--', lw = 1.25)
+            plt.axvline(x = endStamp, color = 'r', ls = '--', lw = 1.25)
 
             # Start of trial happened 12s before end of trial
             # 6s visual feedback, 6s no visual feedback
@@ -432,32 +441,37 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
 
             # End of visual feedback, 6s before trial end
             plt.axvline(x = (endStamp - 6000), color = 'r', ls = '--', lw= 1.25)
-            plt.text(x = (endStamp - 4800), y = 22, s = '<---(no visual feedback)--->',
-                style = 'italic', fontsize = 8)
+            plt.text(x = (endStamp - 4800), y = 22, 
+                     s = '<---(no visual feedback)--->', style = 'italic', 
+                     fontsize = text_fontSize)
             
             ## Plot trial HHFM voltages to bottom subplot
             ax2L = plt.subplot(212, sharex = ax1)
             #plt.axis(ymin = 3, ymax = 7)
             subplotTitle = 'HHFM'
-            plt.title(subplotTitle, fontsize = 10)
+            plt.title(subplotTitle, fontsize = 14)
 
             x = numpy.arange(currentDataSize[0])
-            HHFM_out, = plt.plot(x, HHFM_SolenoidForce, 'b', label = 'HHFM Actuator')
-            ax2L.set_xlabel('Time '+r'$(sec)$', fontsize = 10)
-            ax2L.set_ylabel('Actuator Voltage', fontsize = 10)
+            HHFM_out, = plt.plot(x, HHFM_SolenoidForce, 'b', 
+                                 label = 'HHFM Actuator')
+            
+            ax2L.set_xlabel('Time '+r'$(sec)$', fontsize = label_fontSize)
+            ax2L.set_ylabel('Actuator Voltage', fontsize = label_fontSize)
 
             # setup right hand axes for sensor voltage
             ax2R = ax2L.twinx()
-            ax2R.set_ylabel('Sensor Voltage', fontsize = 10)
+            ax2R.set_ylabel('Sensor Voltage', fontsize = label_fontSize)
             HHFM_in, = ax2R.plot(x, HHFM_SensorForce, 'm', label = 'HHFM Sensor')
             #plt.axis(ymin = 3, ymax = 7)
             plt.xticks(numpy.arange(0,len(x),1000), 
-                       numpy.arange(0,math.ceil(len(x)/1000)+1,1, dtype = numpy.int))
-            plt.tick_params(axis = 'x', labelsize = 8)
+                       numpy.arange(0,math.ceil(len(x)/1000)+1,1, 
+                                    dtype = numpy.int))
+            plt.tick_params(axis = 'x', labelsize = tick_fontSize)
             plt.grid(axis = 'y', which = 'major')
 
-            plt.legend((HHFM_out, HHFM_in), ('HHFM Actuator', 'HHFM Sensor'),
-                loc = 'lower right', fontsize = 8)
+            plt.legend((HHFM_out, HHFM_in), 
+                       ('HHFM Actuator', 'HHFM Sensor'), loc = 'lower right', 
+                       fontsize = legend_fontSize)
 
             ## Save figure to PDF
             pp.savefig(figCounter)
