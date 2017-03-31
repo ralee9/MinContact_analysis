@@ -19,6 +19,8 @@ import os
 import numpy
 import time
 import math
+import matplotlib
+import matplotlib.patches as patches
 from scipy import stats
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.ticker import AutoMinorLocator
@@ -63,10 +65,15 @@ pdfSaveName_LFEstd_visFD = '\\LFE_std_visFD.pdf'
 pdfSaveName_LFEz_CDF = '\\LFE_windowTime_Zscore_CDF.pdf'
 
 # font sizes for axis labels, legends, and other text
-label_fontSize = 14
+label_fontSize = 16
 legend_fontSize = 12
 text_fontSize = 14
 tick_fontSize = 12
+
+# set tick labels to Times New Roman font to match LaTeX axis labels
+ticks_font = matplotlib.font_manager.FontProperties(family = 'Times New Roman',
+                                                    style = 'normal',
+                                                    size = 14)
 
 
 def plot_data(data, title, y_label, savePath):
@@ -104,12 +111,12 @@ def plot_data(data, title, y_label, savePath):
     
     ax = plt.subplot(111)
     plt.errorbar(data_gain, push_mean, yerr = push_SEM, color = 'k', marker = 'o',
-                 linestyle = '--', mec = 'k', label = 'Push', ms = 6.5,
-                 mew = 1.1, capsize=0, fillstyle='none', dashes=(4,3))
+                 linestyle = '--', mec = 'k', label = r'$\mathrm{Push}$', 
+                 ms = 6.5, mew = 1.1, capsize=0, fillstyle='none', dashes=(4,3))
     
     plt.errorbar(data_gain+width, pull_mean, yerr = pull_SEM, color = 'k',
-                 marker = 'o', linestyle = '-', label = 'Pull', ms = 5.0,
-                 mec = 'k', mew = 1.1, capsize=0)
+                 marker = 'o', linestyle = '-', label = r'$\mathrm{Pull}$',
+                 ms = 5.0, mec = 'k', mew = 1.1, capsize=0)
     
     # set up rest of figure & labels  
     plt.grid(which = 'major', axis = 'y')
@@ -135,22 +142,25 @@ def plot_data(data, title, y_label, savePath):
     ax.tick_params(axis = 'x', which='both', labelsize = tick_fontSize)
     ax.tick_params(axis = 'y', labelsize = tick_fontSize)
     ax.set_xticks([1,3], minor = True)
-    plt.xlabel('Magnification Factor', fontsize = label_fontSize)
-    plt.ylabel(y_label, fontsize = label_fontSize)  
-#    if (title == 'LFE mean noFD' or title == 'LFE mean visFD' or 
-#    title == 'LFE std noFD' or title == 'LFE std visFD'):
-#        plt.xlim(xmin = -5, xmax = 5)
+    plt.xlabel(r'$\mathrm{Magnification\ Factor}$', fontsize = label_fontSize)
+    plt.ylabel(y_label, fontsize = label_fontSize)
+    
+    # update tick labels to correct font
+    for label in ax.get_xticklabels():
+        label.set_fontproperties(ticks_font)
+    
+    for label in ax.get_yticklabels():
+        label.set_fontproperties(ticks_font)
         
-
     # remove error bars in legend, format labels for power spectra
     handles, labels = ax.get_legend_handles_labels()
     handles = [h[0] for h in handles]
     if title == 'Power (1 to 4 Hz)':
-        labels = ['Push (1-4 Hz)','Pull (1-4 Hz)']
+        labels = [r'$\mathrm{Push\ (1-4\ Hz)}$',r'$\mathrm{Pull\ (1-4\ Hz)}$']
     if title == 'Power (4 to 7 Hz)':
-        labels = ['Push (4-7 Hz)','Pull (4-7 Hz)']
+        labels = [r'$\mathrm{Push\ (4-7\ Hz)}$',r'$\mathrm{Pull\ (4-7\ Hz)}$']
     if title == 'Power (7 to 10 Hz)':
-        labels = ['Push (7-10 Hz)','Pull (7-10 Hz)']
+        labels = [r'$\mathrm{Push\ (7-10\ Hz)}$',r'$\mathrm{Pull\ (7-10\ Hz)}$']
     leg = ax.legend(handles, labels, loc = 'upper right', 
                     fontsize = legend_fontSize, numpoints = 2, handlelength=3)
     if title == 'Contact Time':
@@ -186,7 +196,7 @@ def plot_LFEdata(data, title, y_label, savePath):
     
     plt.errorbar(target-width, mean_magOff, yerr = SEM_magOff, color = 'k', 
                  marker = 'o', linestyle = 'None', mec = 'k', 
-                 label = 'Magnification Off', ms = 6.5, mew = 1.1, 
+                 label = r'$\mathrm{Magnification\ Off}$', ms = 6.5, mew = 1.1, 
                  capsize = 0, fillstyle = 'none')
     
     plt.errorbar(target+width, mean_magOn, yerr = SEM_magOn, color = 'k',
@@ -199,20 +209,20 @@ def plot_LFEdata(data, title, y_label, savePath):
     if (title == 'LFE mean noFD' or title == 'LFE mean visFD'):
         # y = x target line
         plt.plot(target, target, linestyle = '--', dashes = (4,3),
-                 label = 'Target Force', color = 'k')
+                 label = r'$\mathrm{Target\ Force}$', color = 'k')
         # y = x + 0.5 and y = x - 0.5 window lines
         #plt.plot(target, target+0.5, linestyle = '-', color = 'k')
         #plt.plot(target, target-0.5, linestyle = '-', color = 'k')
         plt.fill_between(target, target+0.5, target-0.5, alpha = 0.30, 
                          color = 'y')
         plt.axhline(y = 0, color = 'k')
-        plt.text(-2.8, 18, 'Push', fontsize = text_fontSize)
-        plt.text(2.2, 18, 'Pull', fontsize = text_fontSize)
+        plt.text(-2.8, 18, r'$\mathrm{Push}$', fontsize = text_fontSize)
+        plt.text(2.2, 18, r'$\mathrm{Pull}$', fontsize = text_fontSize)
         plt.ylim(ymin = -20, ymax = 20)
     
     if (title == 'LFE std noFD' or title == 'LFE std visFD'):
-        plt.text(-2.8, 11.5, 'Push', fontsize = text_fontSize)
-        plt.text(2.2, 11.5, 'Pull', fontsize = text_fontSize)
+        plt.text(-2.8, 11.5, r'$\mathrm{Push}$', fontsize = text_fontSize)
+        plt.text(2.2, 11.5, r'$\mathrm{Pull}$', fontsize = text_fontSize)
         plt.ylim(ymin = 0, ymax = 12)
     
     plt.axvline(x = 0, color = 'k')       
@@ -228,15 +238,24 @@ def plot_LFEdata(data, title, y_label, savePath):
     ax.tick_params(axis = 'both', labelsize = tick_fontSize)
     
     plt.xticks(target, ticks, fontsize = tick_fontSize)
-    plt.xlabel('Target Force '+r'$(grams)$', fontsize = label_fontSize)
+    plt.xlabel(r'$\mathrm{Target\ Force}\ \mathit{(grams)}$', fontsize = label_fontSize)
     plt.ylabel(y_label, fontsize = label_fontSize)
+    
+    # update tick labels to correct font
+    for label in ax.get_xticklabels():
+        label.set_fontproperties(ticks_font)
+    
+    for label in ax.get_yticklabels():
+        label.set_fontproperties(ticks_font)
     
     # remove error bars only
     handles, labels = ax.get_legend_handles_labels()
     if (title == 'LFE mean noFD' or title == 'LFE mean visFD'):
         handles_noErr = numpy.append(handles_noErr, handles[0])
         leg = ax.legend(handles_noErr, 
-                    ['Magnification Off', 'Magnification On', 'Target Force'],
+                    [r'$\mathrm{Magnification\ Off}$',
+                     r'$\mathrm{Magnification\ On}$', 
+                     r'$\mathrm{Target\ Force}$'],
                     loc = 'lower right', fontsize = legend_fontSize,
                     numpoints = 2, handlelength = 2)
     else:
@@ -273,33 +292,104 @@ def plot_CDF(z_magOff, z_magOn, y_label, savePath):
     
     #plot all CDF together    
     plt.plot(sort_magOff_visFD, y, color = 'k', 
-             label = 'Magnification Off, Visual Feedback')
+             label = r'$\mathrm{Mag\ Off,\ Visual\ Feedback}$')
              
     plt.plot(sort_magOn_visFD, y, color = 'darkgrey', 
-             label = 'Magnification On, Visual Feedback')
+             label = r'$\mathrm{Mag\ On,\ Visual\ Feedback}$')
              
     plt.plot(sort_magOff_noFD, y, color = 'k', ls = '--', dashes = (4,3), 
-             label = 'Magnification Off, No Visual Feedback')
+             label = r'$\mathrm{Mag\ Off,\ No\ Visual\ Feedback}$')
              
     plt.plot(sort_magOn_noFD, y, color = 'darkgrey', ls = '--', dashes = (4,3),
-             label = 'Magnification On, No Visual Feedback')
+             label = r'$\mathrm{Mag\ On,\ No\ Visual\ Feedback}$')
     
     # set up rest of figure & labels  
     ax = fig.gca()
-    plt.grid(which = 'major', axis = 'y')   
+    ax.set_axisbelow(True)
+    ax.yaxis.grid(linestyle = ':', zorder = 1)
+    #plt.grid(which = 'major', axis = 'y')   
     plt.ylim(ymin = 0, ymax = 1)
     plt.xlim(xmax = 3)
     #xticks = numpy.array((ax.get_xticks() * 100), dtype= numpy.int)
     #ax.set_xticklabels(xticks, size = 8) 
     #ax.set_yticklabels(ax.get_yticks(), size = tick_fontSize)
     ax.tick_params(axis = 'both', labelsize = tick_fontSize)
-    plt.legend(loc = 'lower right', fontsize = legend_fontSize-3, handlelength = 3)
-    plt.xlabel('% Time in Window Z-Score', fontsize = label_fontSize)
+    #plt.legend(loc = 'lower right', fontsize = legend_fontSize-3, handlelength = 3)
+    plt.xlabel(r'$\mathrm{\%\ Time\ in\ Window\ Z-Score}$', fontsize = label_fontSize)
     plt.ylabel(y_label, fontsize = label_fontSize)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.yaxis.set_ticks_position('left')
     ax.xaxis.set_ticks_position('bottom')
+    
+    # update tick labels to correct font
+    for label in ax.get_xticklabels():
+        label.set_fontproperties(ticks_font)
+    
+    for label in ax.get_yticklabels():
+        label.set_fontproperties(ticks_font)
+    
+    # create custom table legend
+    box_props = dict(boxstyle = 'square', lw = 1.0)
+    table_col = [r'$\mathrm{On}$', r'$\mathrm{Off}$']
+    table_row = [r'$\mathrm{Present}$', r'$\mathrm{Absent}$']
+    table_vals = [['',''],['','']]
+#    the_table = plt.table(rowLabels = table_row,
+#                          colLabels = table_col, cellText = table_vals,
+#                          bbox = [0.70, 0.03, 0.35, 0.30], zorder = 3)
+    the_table = plt.table(rowLabels = table_row,
+                          colLabels = table_col, cellText = table_vals,
+                          loc = 'lower right', zorder = 3)
+    table_props = the_table.properties()
+    table_cells = table_props['child_artists']
+    for cell in table_cells:
+        cell.set_height(0.10)
+        cell.set_width(0.15)
+        cell.set_linewidth(0)
+    
+    the_table.set_fontsize(12)
+    # use regular text to make right hand row labels
+    col_top = r'$\mathrm{Magnification}$'
+    row_left = r'$\mathrm{Visual}$'+'\n'+'$\mathrm{Feedback}$'
+    ax.text(1.68, 0.32, col_top, fontsize = legend_fontSize, zorder = 4)
+    ax.text(0.42, 0.18, row_left, fontsize = legend_fontSize, zorder = 4,
+            rotation = 90)
+    
+    # create box to block out grid lines
+    ax.add_patch(
+        patches.Rectangle(
+            (0.35, 0.028), # (x,y) start
+            2.58,          # width  
+            0.34,          # height
+            fill = True,
+            facecolor = 'white',
+            linewidth = 0,
+            zorder = 2
+        )
+    )
+    
+    # create box around table
+    ax.add_patch(
+        patches.Rectangle(
+            (0.35, 0.028), # (x,y) start
+            2.58,          # width  
+            0.34,          # height
+            fill = False,
+            linewidth = 1,
+            zorder = 4
+        )
+    )
+    
+    # add legend markers
+    plt.axhline(y = 0.17, xmin = 0.71, xmax = 0.80, color = 'darkgrey',
+                zorder = 5)
+    plt.axhline(y = 0.17, xmin = 0.86, xmax = 0.95, color = 'k', zorder = 5)
+    plt.axhline(y = 0.07, xmin = 0.71, xmax = 0.80, color = 'darkgrey',
+                ls = '--', zorder = 5, dashes=(4,3))
+    plt.axhline(y = 0.07, xmin = 0.86, xmax = 0.95, color = 'k', ls = '--',
+                dashes = (4,3), zorder = 5)
+    
+        
     plt.tight_layout()
     pp.savefig(fig)
     
@@ -322,7 +412,7 @@ def plot_CDF(z_magOff, z_magOn, y_label, savePath):
     #ax.set_xticklabels(xticks, size = 8) 
     ax.set_yticklabels(ax.get_yticks(), size = 8)
     plt.legend(loc = 'lower right', fontsize = legend_fontSize, handlelength = 3)
-    plt.xlabel('% Time in Window Z-Score', fontsize = label_fontSize)
+    plt.xlabel(r'$\mathrm{\%\ Time\ in\ Window\ Z-Score}$', fontsize = label_fontSize)
     plt.ylabel(y_label, fontsize = label_fontSize)
     plt.tight_layout()
     pp.savefig(fig2)
@@ -345,7 +435,7 @@ def plot_CDF(z_magOff, z_magOn, y_label, savePath):
     #ax.set_xticklabels(xticks, size = 8) 
     ax.set_yticklabels(ax.get_yticks(), size = 8)
     plt.legend(loc = 'lower right', fontsize = legend_fontSize, handlelength = 3)
-    plt.xlabel('% Time in Window Z-Score', fontsize = label_fontSize)
+    plt.xlabel(r'$\mathrm{\%\ Time\ in\ Window\ Z-Score}$', fontsize = label_fontSize)
     plt.ylabel(y_label, fontsize = label_fontSize)
     plt.tight_layout()
     pp.savefig(fig3)    
@@ -415,36 +505,43 @@ savePath_LFEstd_visFD = outputFolder + pdfSaveName_LFEstd_visFD
 savePath_LFEz_CDF = outputFolder + pdfSaveName_LFEz_CDF
 
 #plot data
-plot_data(mean_rawData,' ', 'Mean Contact Force  '+r'$(grams)$', savePath_mean)
+plot_data(mean_rawData,' ', r'$\mathrm{Mean\ Contact\ Force}\ \mathit{(grams)}$',
+          savePath_mean)
 
-plot_data(SD_rawData,' ', 'SD Contact Force  '+r'$(grams)$', savePath_SD)
+plot_data(SD_rawData,' ', r'$\mathrm{SD\ Contact\ Force}\ \mathit{(grams)}$',
+          savePath_SD)
 
 plot_data(pwr14_rawData, 'Power (1 to 4 Hz)', 
-          'Power  '+r'$(grams^2 \; Hz)$', savePath_pwr14)
+          r'$\mathrm{Power}\ \mathit{(grams^2 \; Hz)}$', savePath_pwr14)
 
 plot_data(pwr47_rawData, 'Power (4 to 7 Hz)',
-          'Power  '+r'$(grams^2 \; Hz)$', savePath_pwr47)
+          r'$\mathrm{Power}\ \mathit{(grams^2 \; Hz)}$', savePath_pwr47)
 
 plot_data(pwr710_rawData, 'Power (7 to 10 Hz)', 
-          'Power  '+r'$(grams^2 \; Hz)$', savePath_pwr710)
+          r'$\mathrm{Power}\ \mathit{(grams^2 \; Hz)}$', savePath_pwr710)
 
-plot_data(contact_rawData, 'Contact Time', 'Contact Time  '+r'$(sec)$', 
+plot_data(contact_rawData, 'Contact Time', 
+          r'$\mathrm{Contact\ \ Time}\ \mathit{(sec)}$', 
           savePath_contact)
 
 plot_LFEdata(LFEmean_noFD_rawData, 'LFE mean noFD', 
-          'Mean Applied Force '+r'$(grams)$', savePath_LFEmean_noFD)
+             r'$\mathrm{Mean\ Applied\ Force}\ \mathit{(grams)}$', 
+             savePath_LFEmean_noFD)
 
 plot_LFEdata(LFEmean_visFD_rawData, 'LFE mean visFD',
-          'Mean Applied Force '+r'$(grams)$', savePath_LFEmean_visFD)
+             r'$\mathrm{Mean\ Applied\ Force}\ \mathit{(grams)}$', 
+             savePath_LFEmean_visFD)
 
 plot_LFEdata(LFEstd_noFD_rawData, 'LFE std noFD',
-          'SD Applied Force '+r'$(grams)$', savePath_LFEstd_noFD)
+             r'$\mathrm{SD\ Applied\ Force}\ \mathit{(grams)}$', 
+             savePath_LFEstd_noFD)
 
 plot_LFEdata(LFEstd_visFD_rawData, 'LFE std visFD',
-          'SD Applied Force '+r'$(grams)$', savePath_LFEstd_visFD)          
+             r'$\mathrm{SD\ Applied\ Force}\ \mathit{(grams)}$',
+             savePath_LFEstd_visFD)          
 
 plot_CDF(LFEz_mag0, LFEz_mag1,
-         'Cumulative Probability', savePath_LFEz_CDF)
+         r'$\mathrm{Cumulative\ Probability}$', savePath_LFEz_CDF)
 
 
 print "\nGraphing done!!"
