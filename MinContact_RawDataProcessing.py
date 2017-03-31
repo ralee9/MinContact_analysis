@@ -49,6 +49,7 @@ label_fontSize = 10
 legend_fontSize = 8
 text_fontSize = 8
 tick_fontSize = 10
+units_fontSize = 14
 
 ################################################################################
 ##
