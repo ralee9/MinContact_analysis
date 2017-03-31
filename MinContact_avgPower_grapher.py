@@ -35,6 +35,16 @@ data = '\\MinContact_avgPower.txt'
 
 pdfSaveName = '\\MinContact_powerPercentage.pdf'
 
+# font sizes for axis labels, legends, and other text
+label_fontSize = 16
+legend_fontSize = 12
+text_fontSize = 14
+tick_fontSize = 12
+
+# set tick labels to Times New Roman font to match LaTeX axis labels
+ticks_font = matplotlib.font_manager.FontProperties(family = 'Times New Roman',
+                                                    style = 'normal',
+                                                    size = 14)
 
 
 def plot_data(data, title, y_label, savePath):
@@ -47,7 +57,8 @@ def plot_data(data, title, y_label, savePath):
     SEM = SD/math.sqrt(N)
     
     gain = numpy.array([1, 2, 3], dtype = 'int64')
-    ticks = ['1-4 Hz', '4-7 Hz', '7-10 Hz']
+    ticks = [r'$\mathrm{1-4\ Hz}$', r'$\mathrm{4-7\ Hz}$', 
+             r'$\mathrm{7-10\ Hz}$']
     #width = 0.05
     
     pp = PdfPages(savePath)
@@ -67,12 +78,19 @@ def plot_data(data, title, y_label, savePath):
     ax.yaxis.set_ticks_position('left')
     ax.xaxis.set_ticks_position('bottom')
     plt.xticks(gain, ticks)
-    ax.tick_params(axis = 'both', labelsize = 12)
+    ax.tick_params(axis = 'both', labelsize = tick_fontSize)
     plt.xlim(xmin = 0, xmax = 4)
     #plt.axvline(x = 0, linewidth = 1.0, color = 'k')
-    plt.xlabel('Frequency Band', fontsize = 14)
-    plt.ylabel(y_label, fontsize = 14)
+    plt.xlabel(r'$\mathrm{Frequency\ Band}$', fontsize = label_fontSize)
+    plt.ylabel(y_label, fontsize = label_fontSize)
     plt.ticklabel_format(style = 'sci', axis = 'y', scilimits = (0,0))
+    
+    # update tick labels to correct font
+    for label in ax.get_xticklabels():
+        label.set_fontproperties(ticks_font)
+    
+    for label in ax.get_yticklabels():
+        label.set_fontproperties(ticks_font)
     
 
     # remove error bars in legend
@@ -106,7 +124,7 @@ savePath = outputFolder + pdfSaveName
 
 
 #plot data
-plot_data(rawData,' ', 'Power  '+r'$(grams^2 \; Hz)$', savePath)
+plot_data(rawData,' ', r'$\mathrm{Power}\ (grams^2 \; Hz)$', savePath)
 
 
 print "\nGraphing done!!"
