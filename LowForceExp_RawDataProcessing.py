@@ -35,19 +35,26 @@ import os
 import math
 import time
 import numpy
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 subjectNumber = 'S5' # Only need to change subjectNumber to process all data
 
 rawDataDirectory = 'C:\\Users\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\LFE_testing\\LFE_max_4g\\'
+#rawDataDirectory = 'D:\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\LFE_testing\\LFE_max_4g\\'
 #rawDataDirectory = 'D:\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\'
 
 # font sizes for axis labels, legends, and other text
-label_fontSize = 11
-legend_fontSize = 8
-text_fontSize = 8
-tick_fontSize = 10
+label_fontSize = 16
+legend_fontSize = 14
+text_fontSize = 12
+tick_fontSize = 16
+
+# set tick labels to Times New Roman font to match LaTeX axis labels
+ticks_font = matplotlib.font_manager.FontProperties(family = 'Times New Roman',
+                                                    style = 'normal',
+                                                    size = tick_fontSize)
 
 ##############################################################################
 ##
@@ -393,7 +400,7 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
 
 
             ax1 = plt.subplot(211)
-            subplotTitle = 'GS0 Force Sensor'
+            subplotTitle = r'$\mathrm{GS0}$'+'-'+r'$\mathrm{100\ Force\ Sensor}$'
             ax1.set_title(subplotTitle, fontsize = label_fontSize)
             
             ## Plot trial force & filtered force to top subplot
@@ -419,11 +426,20 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
             plt.setp(ax1.get_xticklabels(), visible = False)
             plt.xticks(numpy.arange(0,len(x),1000))
             plt.tick_params(axis = 'y', labelsize = tick_fontSize)
-            plt.ylabel('Applied Force '+r'$(grams)$', fontsize = label_fontSize)            
+            plt.ylabel(r'$\mathrm{Applied\ Force}\ \mathit{(grams)}$', 
+                       fontsize = label_fontSize+2)            
             plt.grid(axis = 'y', which = 'major')
             
+            # update tick labels to correct font
+            for label in ax1.get_xticklabels():
+                label.set_fontproperties(ticks_font)
+    
+            for label in ax1.get_yticklabels():
+                label.set_fontproperties(ticks_font)
+            
             plt.legend((GS0Line, targetZone), 
-                       ('GS0-100 Force (raw)', 'Target Window'),
+                       (r'$\mathrm{GS0}$'+'-'+r'$\mathrm{100\ Force\ (raw)}$',
+                        r'$\mathrm{Target\ Window}$'),
                        loc = 'lower right', fontsize = legend_fontSize,
                        handlelength = 3)
 
@@ -442,36 +458,54 @@ def process_split_trials(pdfSaveFolderPath, timestampArray, blockNumberString):
             # End of visual feedback, 6s before trial end
             plt.axvline(x = (endStamp - 6000), color = 'r', ls = '--', lw= 1.25)
             plt.text(x = (endStamp - 5800), y = 22, 
-                     s = '<---(no visual feedback)--->', style = 'italic', 
+                     s = r'$\longleftarrow \mathit{(no\ visual\ feedback)} \longrightarrow$',  
                      fontsize = text_fontSize)
             
             ## Plot trial HHFM voltages to bottom subplot
             ax2L = plt.subplot(212, sharex = ax1)
             #plt.axis(ymin = 3, ymax = 7)
-            subplotTitle = 'HHFM'
+            subplotTitle = r'$\mathrm{HHFM}$'
             plt.title(subplotTitle, fontsize = label_fontSize)
 
             x = numpy.arange(currentDataSize[0])
             HHFM_out, = plt.plot(x, HHFM_SolenoidForce, 'b', 
-                                 label = 'HHFM Actuator')
+                                 label = r'$\mathrm{HHFM\ Actuator}$')
             
-            ax2L.set_xlabel('Time '+r'$(sec)$', fontsize = label_fontSize)
-            ax2L.set_ylabel('Actuator Voltage', fontsize = label_fontSize)
-            plt.tick_params(axis = 'both', labelsize = tick_fontSize)
+            plt.setp(ax2L.get_yminorticklabels(), visible = False)            
+            ax2L.set_xlabel(r'$\mathrm{Time}\ \mathit{(sec)}$', fontsize = label_fontSize+3)
+            ax2L.set_ylabel(r'$\mathrm{Actuator\ Voltage}$', fontsize = label_fontSize+2)
+            plt.tick_params(axis = 'both', which = 'major',
+                            labelsize = tick_fontSize)
+            
+            # update tick labels to correct font
+            for label in ax2L.get_xticklabels():
+                label.set_fontproperties(ticks_font)
+    
+            for label in ax2L.get_yticklabels():
+                label.set_fontproperties(ticks_font)
 
             # setup right hand axes for sensor voltage
             ax2R = ax2L.twinx()
-            ax2R.set_ylabel('Sensor Voltage', fontsize = label_fontSize)
-            HHFM_in, = ax2R.plot(x, HHFM_SensorForce, 'm', label = 'HHFM Sensor')
+            ax2R.set_ylabel(r'$\mathrm{Sensor\ Voltage}$', fontsize = label_fontSize+2)
+            HHFM_in, = ax2R.plot(x, HHFM_SensorForce, 'm', 
+                                 label = r'$\mathrm{HHFM\ Sensor}$')
             #plt.axis(ymin = 3, ymax = 7)
             plt.xticks(numpy.arange(0,len(x),1000), 
                        numpy.arange(0,math.ceil(len(x)/1000)+1,1, 
                                     dtype = numpy.int))
             plt.tick_params(axis = 'y', labelsize = tick_fontSize)
             plt.grid(axis = 'y', which = 'major')
+            
+            # update tick labels to correct font
+            for label in ax2R.get_xticklabels():
+                label.set_fontproperties(ticks_font)
+    
+            for label in ax2R.get_yticklabels():
+                label.set_fontproperties(ticks_font)
 
             plt.legend((HHFM_out, HHFM_in), 
-                       ('HHFM Actuator', 'HHFM Sensor'), loc = 'lower right', 
+                       (r'$\mathrm{HHFM\ Actuator}$',
+                        r'$\mathrm{HHFM\ Sensor}$'), loc = 'lower right', 
                        fontsize = legend_fontSize)
 
             ## Save figure to PDF
