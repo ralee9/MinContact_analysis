@@ -291,17 +291,17 @@ def plot_CDF(z_magOff, z_magOn, y_label, savePath):
     y = numpy.array(range(N))/float(N)
     
     #plot all CDF together    
-    plt.plot(sort_magOff_visFD, y, color = 'k', 
-             label = r'$\mathrm{Mag\ Off,\ Visual\ Feedback}$')
-             
-    plt.plot(sort_magOn_visFD, y, color = 'darkgrey', 
-             label = r'$\mathrm{Mag\ On,\ Visual\ Feedback}$')
-             
     plt.plot(sort_magOff_noFD, y, color = 'k', ls = '--', dashes = (4,3), 
-             label = r'$\mathrm{Mag\ Off,\ No\ Visual\ Feedback}$')
+             label = r'$\mathrm{No\ Feedback,\ Mag\ Off}$')
              
     plt.plot(sort_magOn_noFD, y, color = 'darkgrey', ls = '--', dashes = (4,3),
-             label = r'$\mathrm{Mag\ On,\ No\ Visual\ Feedback}$')
+             label = r'$\mathrm{No\ Feedback,\ Mag\ On}$')
+             
+    plt.plot(sort_magOff_visFD, y, color = 'k', 
+             label = r'$\mathrm{Feedback,\ Mag\ Off}$')
+             
+    plt.plot(sort_magOn_visFD, y, color = 'darkgrey', 
+             label = r'$\mathrm{Feedback,\ Mag\ On}$')
     
     # set up rest of figure & labels  
     ax = fig.gca()
@@ -314,7 +314,7 @@ def plot_CDF(z_magOff, z_magOn, y_label, savePath):
     #ax.set_xticklabels(xticks, size = 8) 
     #ax.set_yticklabels(ax.get_yticks(), size = tick_fontSize)
     ax.tick_params(axis = 'both', labelsize = tick_fontSize)
-    #plt.legend(loc = 'lower right', fontsize = legend_fontSize-3, handlelength = 3)
+    plt.legend(loc = 'lower right', fontsize = legend_fontSize-3, handlelength = 3)
     plt.xlabel(r'$\mathrm{\%\ Time\ in\ Window\ Z-Score}$', fontsize = label_fontSize)
     plt.ylabel(y_label, fontsize = label_fontSize)
     ax.spines['right'].set_visible(False)
@@ -329,65 +329,67 @@ def plot_CDF(z_magOff, z_magOn, y_label, savePath):
     for label in ax.get_yticklabels():
         label.set_fontproperties(ticks_font)
     
-    # create custom table legend
-    box_props = dict(boxstyle = 'square', lw = 1.0)
-    table_col = [r'$\mathrm{On}$', r'$\mathrm{Off}$']
-    table_row = [r'$\mathrm{Present}$', r'$\mathrm{Absent}$']
-    table_vals = [['',''],['','']]
-#    the_table = plt.table(rowLabels = table_row,
-#                          colLabels = table_col, cellText = table_vals,
-#                          bbox = [0.70, 0.03, 0.35, 0.30], zorder = 3)
-    the_table = plt.table(rowLabels = table_row,
-                          colLabels = table_col, cellText = table_vals,
-                          loc = 'lower right', zorder = 3)
-    table_props = the_table.properties()
-    table_cells = table_props['child_artists']
-    for cell in table_cells:
-        cell.set_height(0.10)
-        cell.set_width(0.15)
-        cell.set_linewidth(0)
-    
-    the_table.set_fontsize(12)
-    # use regular text to make right hand row labels
-    col_top = r'$\mathrm{Magnification}$'
-    row_left = r'$\mathrm{Visual}$'+'\n'+'$\mathrm{Feedback}$'
-    ax.text(1.68, 0.32, col_top, fontsize = legend_fontSize, zorder = 4)
-    ax.text(0.42, 0.18, row_left, fontsize = legend_fontSize, zorder = 4,
-            rotation = 90)
-    
-    # create box to block out grid lines
-    ax.add_patch(
-        patches.Rectangle(
-            (0.35, 0.028), # (x,y) start
-            2.58,          # width  
-            0.34,          # height
-            fill = True,
-            facecolor = 'white',
-            linewidth = 0,
-            zorder = 2
-        )
-    )
-    
-    # create box around table
-    ax.add_patch(
-        patches.Rectangle(
-            (0.35, 0.028), # (x,y) start
-            2.58,          # width  
-            0.34,          # height
-            fill = False,
-            linewidth = 1,
-            zorder = 4
-        )
-    )
-    
-    # add legend markers
-    plt.axhline(y = 0.17, xmin = 0.71, xmax = 0.80, color = 'darkgrey',
-                zorder = 5)
-    plt.axhline(y = 0.17, xmin = 0.86, xmax = 0.95, color = 'k', zorder = 5)
-    plt.axhline(y = 0.07, xmin = 0.71, xmax = 0.80, color = 'darkgrey',
-                ls = '--', zorder = 5, dashes=(4,3))
-    plt.axhline(y = 0.07, xmin = 0.86, xmax = 0.95, color = 'k', ls = '--',
-                dashes = (4,3), zorder = 5)
+#==============================================================================
+#     # create custom table legend
+#     box_props = dict(boxstyle = 'square', lw = 1.0)
+#     table_col = [r'$\mathrm{On}$', r'$\mathrm{Off}$']
+#     table_row = [r'$\mathrm{Present}$', r'$\mathrm{Absent}$']
+#     table_vals = [['',''],['','']]
+# #    the_table = plt.table(rowLabels = table_row,
+# #                          colLabels = table_col, cellText = table_vals,
+# #                          bbox = [0.70, 0.03, 0.35, 0.30], zorder = 3)
+#     the_table = plt.table(rowLabels = table_row,
+#                           colLabels = table_col, cellText = table_vals,
+#                           loc = 'lower right', zorder = 3)
+#     table_props = the_table.properties()
+#     table_cells = table_props['child_artists']
+#     for cell in table_cells:
+#         cell.set_height(0.10)
+#         cell.set_width(0.15)
+#         cell.set_linewidth(0)
+#     
+#     the_table.set_fontsize(12)
+#     # use regular text to make right hand row labels
+#     col_top = r'$\mathrm{Magnification}$'
+#     row_left = r'$\mathrm{Visual}$'+'\n'+'$\mathrm{Feedback}$'
+#     ax.text(1.68, 0.32, col_top, fontsize = legend_fontSize, zorder = 4)
+#     ax.text(0.42, 0.18, row_left, fontsize = legend_fontSize, zorder = 4,
+#             rotation = 90)
+#     
+#     # create box to block out grid lines
+#     ax.add_patch(
+#         patches.Rectangle(
+#             (0.35, 0.028), # (x,y) start
+#             2.58,          # width  
+#             0.34,          # height
+#             fill = True,
+#             facecolor = 'white',
+#             linewidth = 0,
+#             zorder = 2
+#         )
+#     )
+#     
+#     # create box around table
+#     ax.add_patch(
+#         patches.Rectangle(
+#             (0.35, 0.028), # (x,y) start
+#             2.58,          # width  
+#             0.34,          # height
+#             fill = False,
+#             linewidth = 1,
+#             zorder = 4
+#         )
+#     )
+#     
+#     # add legend markers
+#     plt.axhline(y = 0.17, xmin = 0.71, xmax = 0.80, color = 'darkgrey',
+#                 zorder = 5)
+#     plt.axhline(y = 0.17, xmin = 0.86, xmax = 0.95, color = 'k', zorder = 5)
+#     plt.axhline(y = 0.07, xmin = 0.71, xmax = 0.80, color = 'darkgrey',
+#                 ls = '--', zorder = 5, dashes=(4,3))
+#     plt.axhline(y = 0.07, xmin = 0.86, xmax = 0.95, color = 'k', ls = '--',
+#                 dashes = (4,3), zorder = 5)
+#==============================================================================
     
         
     plt.tight_layout()

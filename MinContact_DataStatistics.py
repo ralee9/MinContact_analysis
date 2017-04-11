@@ -25,6 +25,7 @@ import os
 import numpy
 import math
 import time
+import matplotlib
 from scipy import stats
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
@@ -36,10 +37,15 @@ rawDataDirectory = 'C:\\Users\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\Minimum
 #rawDataDirectory = 'D:\\Randy Lee\\Documents\\VIA Lab\\HHFM Data\\MinimumContact_rawData'
 
 # font sizes for axis labels, legends, and other text
-label_fontSize = 12
-legend_fontSize = 8
-text_fontSize = 8
-tick_fontSize = 10
+label_fontSize = 16
+legend_fontSize = 14
+text_fontSize = 12
+tick_fontSize = 16
+
+# set tick labels to Times New Roman font to match LaTeX axis labels
+ticks_font = matplotlib.font_manager.FontProperties(family = 'Times New Roman',
+                                                    style = 'normal',
+                                                    size = tick_fontSize)
 
 ###############################################################################
 ##
@@ -609,7 +615,7 @@ def graph_contact(trialParameters, blockNumberString):
         fig.suptitle(figureTitle, fontsize=8, fontweight='bold')
 
         ax1 = plt.subplot(211)
-        subplotTitle = 'GS0-100 Force Sensor'
+        subplotTitle = r'$\mathrm{GS0}$'+'-'+r'$\mathrm{100\ Force\ Sensor}$'
         ax1.set_title(subplotTitle, fontsize=label_fontSize)
 
         ## Plot trial force to top subplot
@@ -620,10 +626,18 @@ def graph_contact(trialParameters, blockNumberString):
         plt.xticks(numpy.arange(0,len(x),1000),
                    numpy.arange(0,math.ceil(len(x)/1000)+1,1, dtype=numpy.int))
         plt.setp(ax1.get_xticklabels(), visible=False)
-        plt.ylabel('Applied Force '+r'$(grams)$', fontsize=label_fontSize)
+        plt.ylabel(r'$\mathrm{Applied\ Force}\ \mathit{(grams)}$',
+                   fontsize=label_fontSize+2)
         plt.tick_params(axis = 'y', labelsize = tick_fontSize)
         #plt.xlabel('Time (seconds)')
         plt.grid(axis='y', which='major')
+        
+        # update tick labels to correct font
+        for label in ax1.get_xticklabels():
+            label.set_fontproperties(ticks_font)
+    
+        for label in ax1.get_yticklabels():
+            label.set_fontproperties(ticks_font)        
 
         # Plot target force and x axis
         plt.axhline(y=targetForce, color='grey', ls='--', lw=1.25)
@@ -672,7 +686,7 @@ def graph_contact(trialParameters, blockNumberString):
                 plt.fill_betweenx(y, x1=left, x2=right, facecolor='y', alpha=0.2)
 
         ax2 = plt.subplot(212)
-        subplotTitle = "Welch's t-test p-values"
+        subplotTitle = r"$\mathrm{Welch's\ t}$"+'-'+r"$\mathrm{test\ p}$"+'-'+r"$\mathrm{values}$"
         ax2.set_title(subplotTitle, fontsize=label_fontSize)
         
         # set axes and labels
@@ -680,10 +694,17 @@ def graph_contact(trialParameters, blockNumberString):
         plt.axis(ymin=-0.05, ymax=1)
         plt.xticks(numpy.arange(0,len(x),1000),
                    numpy.arange(0,math.ceil(len(x)/1000)+1,1, dtype=numpy.int))
-        plt.xlabel('Time '+r'$(sec)$', fontsize=label_fontSize)
-        plt.ylabel('p-value', fontsize=label_fontSize)
+        plt.xlabel(r'$\mathrm{Time}\ \mathit{(sec)}$', fontsize=label_fontSize+3)
+        plt.ylabel(r'$\mathrm{p-value}$', fontsize=label_fontSize+2)
         plt.tick_params(axis = 'both', labelsize = tick_fontSize)
         plt.grid(axis='y', which='major')
+        
+        # update tick labels to correct font
+        for label in ax2.get_xticklabels():
+            label.set_fontproperties(ticks_font)
+    
+        for label in ax2.get_yticklabels():
+            label.set_fontproperties(ticks_font) 
         
         # Load and extract data
         fileName = os.getcwd() + '\\noContact_pVal_Trial{0:02d}.txt'.format(trialCounter+1)
